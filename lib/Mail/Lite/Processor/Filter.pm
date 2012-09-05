@@ -24,11 +24,11 @@ sub process {
     my $mbody	= $message->body;
 
     foreach my $filter ( @{ $processor_args->{filters} } ) {
-	if ( ref $filter eq 'ARRAY' ) {
-	    $mbody =~ s/$filter->[0]/$filter->[1]/g;
-	} else {
-	    $mbody =~ s/$filter//g;
-	}
+        if ( ref $filter eq 'ARRAY' ) {
+            $mbody =~ s/$filter->[0]/$filter->[1]/g;
+        } else {
+            $mbody =~ s/$filter//g;
+        }
     }
 
     $message->{body} = $mbody;

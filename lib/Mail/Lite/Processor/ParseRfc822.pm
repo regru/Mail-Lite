@@ -14,38 +14,38 @@ sub process {
     ### $messages
 
     ref $messages eq 'ARRAY'
-	or $messages = [ $messages ];
+        or $messages = [ $messages ];
 
     my @output;
 
     foreach my $message (@$messages) {
-	### $message
-	my @lines = split /\n\s*/, $message->body;
+        ### $message
+        my @lines = split /\n\s*/, $message->body;
 
-	my $parsed = {};
+        my $parsed = {};
 
-	foreach (@lines) {
-	    next unless length;
+        foreach (@lines) {
+            next unless length;
 
-	    my ($key, $val) = /\s*(.+?):\s+(.+)/;
+            my ($key, $val) = /\s*(.+?):\s+(.+)/;
 
-	    next unless defined $key;
+            next unless defined $key;
 
-	    $key = lc $key;
-	    $key =~ tr/-/_/;
+            $key = lc $key;
+            $key =~ tr/-/_/;
 
-	    unless (exists($parsed->{$key})) {
-		$parsed->{$key} = $val;
-	    } else {
-		if (ref $parsed->{$key} eq 'ARRAY') {
-		    push @{$parsed->{$key}}, $val;
-		} else {
-		    $parsed->{$key} = [ $parsed->{$key}, $val ];
-		}
-	    }
-	}
+            unless (exists($parsed->{$key})) {
+                $parsed->{$key} = $val;
+            } else {
+                if (ref $parsed->{$key} eq 'ARRAY') {
+                    push @{$parsed->{$key}}, $val;
+                } else {
+                    $parsed->{$key} = [ $parsed->{$key}, $val ];
+                }
+            }
+        }
 
-	push @output, $parsed;
+        push @output, $parsed;
     }
 
     ${ $args_ref->{ output } } = \@output;

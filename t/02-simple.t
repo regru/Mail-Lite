@@ -33,12 +33,12 @@ chdir('..') if -d 'simple';
 my @messages = @ARGV;
 if ( not @messages ) {
     find(
-	sub { 
-	    -f $_ && $File::Find::name !~ m/.svn/ && m/\.msg$/ &&
-	    ! m/^_/
-		and push @messages, $File::Find::name
-	},
-	't/simple');
+        sub { 
+            -f $_ && $File::Find::name !~ m/.svn/ && m/\.msg$/ &&
+            ! m/^_/
+                and push @messages, $File::Find::name
+        },
+        't/simple');
 }
 
 my ($rules) = LoadFile('t/simple/rules.yaml');
@@ -54,15 +54,15 @@ foreach my $message_fn (@messages) {
     $message->{x_filename} = $message_fn;
 
     Mail::Lite::Processor->process(
-	message => $message,
-	rules => $rules,
-	handler => sub { push @$matched_rules, [ @_ ] },
+        message => $message,
+        rules => $rules,
+        handler => sub { push @$matched_rules, [ @_ ] },
     ); 
 
     if ( $ENV{OVERWRITE_DATA} ) {
-	open my $fh, '>', $dat_fn;
-	print $fh Dump( $matched_rules );
-	close $fh;
+        open my $fh, '>', $dat_fn;
+        print $fh Dump( $matched_rules );
+        close $fh;
     }
     is_deeply( $matched_rules, LoadFile( $dat_fn ), $message_fn );
 }

@@ -38,8 +38,8 @@ sub process_each_message {
     $out = substr( $_, 0, -7 );
 
     while ($_ = <$fh>) {
-	_do_process_message( \$out, %param );
-	$out = "From ".substr($_, 0, -7);
+        _do_process_message( \$out, %param );
+        $out = "From ".substr($_, 0, -7);
     }
     _do_process_message( \$out, %param );
 }
@@ -48,18 +48,18 @@ sub _do_process_message {
     my ($txt_ref, %param) = @_;
 
     if ($param{processor}) {
-	$param{processor}->process(
-	    message => ${$txt_ref},
-	);
+        $param{processor}->process(
+            message => ${$txt_ref},
+        );
     }
     else {
-	if ($param{do_parse}) {
-	    my $message = new Mail::Lite::Message( ${$txt_ref} );
-	    $param{handler}->( $message );
-	}
-	else {
-	    $param{handler}->( ${$txt_ref} );
-	}
+        if ($param{do_parse}) {
+            my $message = new Mail::Lite::Message( ${$txt_ref} );
+            $param{handler}->( $message );
+        }
+        else {
+            $param{handler}->( ${$txt_ref} );
+        }
     }
 }
 

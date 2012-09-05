@@ -34,11 +34,11 @@ my @messages = @ARGV;
 
 if ( not @messages ) {
     find(
-	sub { 
-	    -f $_ && m/^\d/ && $File::Find::name !~ m/.svn/ && ! m/\.dat$/
-		and push @messages, $File::Find::name
-	},
-	't/data');
+        sub { 
+            -f $_ && m/^\d/ && $File::Find::name !~ m/.svn/ && ! m/\.dat$/
+                and push @messages, $File::Find::name
+        },
+        't/data');
 }
 
 my ($rules) = LoadFile('t/data/rules.yaml');
@@ -58,15 +58,15 @@ foreach my $message_fn (@messages) {
     $message->{x_filename} = $message_fn;
 
     Mail::Lite::Processor->process(
-	message => $message,
-	rules => $rules,
-	handler => sub { push @$matched_rules, [ @_ ] },
+        message => $message,
+        rules => $rules,
+        handler => sub { push @$matched_rules, [ @_ ] },
     ); 
 
     if ( $ENV{OVERWRITE_DATA} ) {
-	open my $fh, '>', $dat_fn;
-	print $fh Dump( $matched_rules );
-	close $fh;
+        open my $fh, '>', $dat_fn;
+        print $fh Dump( $matched_rules );
+        close $fh;
     }
     is_deeply( $matched_rules, LoadFile( $dat_fn ), $message_fn );
 }

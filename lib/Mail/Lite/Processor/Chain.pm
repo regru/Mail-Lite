@@ -26,8 +26,8 @@ sub process {
     my @rules;
     
     foreach my $rule (@{ $all_rules }) {
-	next unless $rule->{id} =~ $regexp;
-	push @rules, { %$rule, id => $rule_name.'.'.$1 };
+        next unless $rule->{id} =~ $regexp;
+        push @rules, { %$rule, id => $rule_name.'.'.$1 };
     }
 
     $processor_obj->{rules} = \@rules;
@@ -37,32 +37,32 @@ sub process {
     my @output;
 
     ref $input_ref eq 'ARRAY'
-	or $input_ref = [ $input_ref ];
+        or $input_ref = [ $input_ref ];
 
     foreach my $message (@$input_ref) {
-	my $handler_sub = sub { 
-	    ### @_ 
-	    my $rule_id	= shift;
-	    my $result	= shift->[0];
+        my $handler_sub = sub { 
+            ### @_ 
+            my $rule_id	= shift;
+            my $result	= shift->[0];
 
-	    my $param = {
-		rule_id   => $rule_id,
-	    };
+            my $param = {
+                rule_id   => $rule_id,
+            };
 
-	    if ( ref $result eq 'HASH' ) {
-		%$param	= (%$result, %$param);
-	    }
-	    else {
-		$param->{result} = $result;
-	    }
+            if ( ref $result eq 'HASH' ) {
+                %$param	= (%$result, %$param);
+            }
+            else {
+                $param->{result} = $result;
+            }
 
-	    push @output, $param;
-	};
+            push @output, $param;
+        };
 
-	$processor_obj->process(
-	    message => $message,
-	    handler => $handler_sub,
-	);
+        $processor_obj->process(
+            message => $message,
+            handler => $handler_sub,
+        );
     }
 
     ${ $args_ref->{ output } } = \@output;

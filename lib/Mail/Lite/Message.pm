@@ -40,7 +40,7 @@ sub new {
     $self->{raw_header} = "\n".$self->{raw_header}."\n";
 
     unless ( $self->{body} ) {
-	die "FATAL: no head/body separator found";
+        die "FATAL: no head/body separator found";
     }
 
     return $self;
@@ -51,9 +51,9 @@ sub _received {
     my $value = shift;
 
     if (    $value =~ m/for <?([-@\w\.]{5,})>?;/is 
-	&&  index( $1, '@localhost') < 0 ) {
+        &&  index( $1, '@localhost') < 0 ) {
 
-	push @{ $self->{received_recipients} ||= [] }, $1;
+        push @{ $self->{received_recipients} ||= [] }, $1;
     }
 }
 
@@ -85,11 +85,11 @@ sub _check_mime_and_reencode {
     my $value_ref = shift;
     my $origname  = shift;
     if ( $value_ref && $$value_ref && $$value_ref =~ m/\=\?(.+?)\?(.)\?/i ) {
-	my @values = MIME::Words::decode_mimewords( $$value_ref,
-						    Field => $origname );
+        my @values = MIME::Words::decode_mimewords( $$value_ref,
+                                                    Field => $origname );
 
-	# note -- code page
-	$$value_ref = join q{}, map { $_->[0] } @values;
+        # note -- code page
+        $$value_ref = join q{}, map { $_->[0] } @values;
     }
 }
 
@@ -141,35 +141,35 @@ sub headers {
     #$self->{from} = $1;
 
     while ( $self->{raw_header} =~ /
-				    (^[^:]+?)		# start of field name
-				    :			# separator
-				    [\t ]*		# skip all spaces
-				    (			# match
-					(?:		# group of
-					    (?!^[\w_\-]+:)  # starting not with word after which ':' is present
-					    .+\n?	# and all the string
-					)+  # few times
-				    )
-				   /gmx ) 
+                                    (^[^:]+?)		# start of field name
+                                    :			# separator
+                                    [\t ]*		# skip all spaces
+                                    (			# match
+                                        (?:		# group of
+                                            (?!^[\w_\-]+:)  # starting not with word after which ':' is present
+                                            .+\n?	# and all the string
+                                        )+  # few times
+                                    )
+                                   /gmx ) 
     { 
-	next unless $2;
+        next unless $2;
 #	next if $1 eq 'From' || $1 eq 'Subject';
 
-	($origname, $value) = ($1, $2);
+        ($origname, $value) = ($1, $2);
 
-	chomp $value;
+        chomp $value;
 
-	($name = $origname) =~ tr/-A-Z/_a-z/;
+        ($name = $origname) =~ tr/-A-Z/_a-z/;
 
-	_check_mime_and_reencode( \$value, $origname );
+        _check_mime_and_reencode( \$value, $origname );
 
-	if ( my $sub = $self->can("_$name") ) {
-	    $sub->( $self, $value, \%header );
-	    next;
-	}
+        if ( my $sub = $self->can("_$name") ) {
+            $sub->( $self, $value, \%header );
+            next;
+        }
 
-	$header{$name} = exists $header{$name} ? 
-	    $header{$name}."\n $value" : $value;
+        $header{$name} = exists $header{$name} ? 
+            $header{$name}."\n $value" : $value;
     }
 
     #$header{subject } = $self->{subject	};
@@ -194,15 +194,15 @@ sub recipients {
     my $self = shift;
 
     unless ($self->{recipients}) {
-	my $header = $self->headers;
-	my @to = @{ $self->{received_recipients} || [] };
-	push @to, map { /<(.+?)>/ ? $1 : $_ } split /\n\s*/, $self->header('to') if $self->header('to');
-	push @to, map { /<(.+?)>/ ? $1 : $_ } split /\n\s*/, $self->header('cc') if $self->header('cc');
-	push @to, $1 if	    $self->header('x_rcpt_to') 
-			&&  $self->header('x_rcpt_to') =~ m/^<?(.+?)>?$/i;
+        my $header = $self->headers;
+        my @to = @{ $self->{received_recipients} || [] };
+        push @to, map { /<(.+?)>/ ? $1 : $_ } split /\n\s*/, $self->header('to') if $self->header('to');
+        push @to, map { /<(.+?)>/ ? $1 : $_ } split /\n\s*/, $self->header('cc') if $self->header('cc');
+        push @to, $1 if	    $self->header('x_rcpt_to') 
+                        &&  $self->header('x_rcpt_to') =~ m/^<?(.+?)>?$/i;
 
-	my %tmp_to = map { index($_, '@') > 0 ? (lc $_ => 1) : () } @to;
-	$self->{recipients} = [ keys %tmp_to ];
+        my %tmp_to = map { index($_, '@') > 0 ? (lc $_ => 1) : () } @to;
+        $self->{recipients} = [ keys %tmp_to ];
     }
 
     $self->{recipients};
